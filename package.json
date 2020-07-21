@@ -3,14 +3,5 @@
   "version": "0.0.0",
   "description": "Limit amount of concurrent processes.",
   "main": "index.js",
-  "scripts": {
-    "test": "nyc --reporter=html mocha",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
-  },
-  "repository": "nahanjs/nahan-valve",
-  "devDependencies": {
-    "coveralls": "^3.1.0",
-    "mocha": "^8.0.1",
-    "nyc": "^15.1.0"
-  }
+  "repository": "nahanjs/nahan-valve"
 }
