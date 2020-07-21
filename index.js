@@ -2,31 +2,34 @@
 
 module.exports = Valve;
 
-function Valve(emitter) {
-
+function Valve(
+    defaultLimit = Infinity,
+    controlEmitter = undefined
+) {
+    let realLimit = defaultLimit;
+    let done = true;
     let count = 0;
     const todos = [];
-    let limit = Infinity;
-    let done = true;
 
-    emitter.on('close', (_limit = 1) => {
-        limit = _limit;
-        done = false;
-    });
+    if (controlEmitter) {
+        controlEmitter.on('close', (limit = 1) => {
+            realLimit = limit;
+            done = false;
+        });
 
-    emitter.on('open', (tmp) => {
-        console.log(tmp);
-        limit = Infinity;
-        done = true;
-    });
+        controlEmitter.on('open', (limit) => {
+            realLimit = limit || defaultLimit;
+            done = true;
+        });
+    }
 
     return async (ctx, next) => {
-        if (count <= limit && !done) {
+        if (controlEmitter && count <= realLimit && !done) {
             done = true;
-            emitter.emit('done');
+            controlEmitter.emit('done');
         }
 
-        if (count >= limit) {
+        if (count >= realLimit) {
             await new Promise(resolve => todos.push(resolve));
         } else {
             ++count;
@@ -35,12 +38,12 @@ function Valve(emitter) {
         await next();
         --count;
 
-        if (count <= limit && !done) {
+        if (controlEmitter && count <= realLimit && !done) {
             done = true;
-            emitter.emit('done');
+            controlEmitter.emit('done');
         }
 
-        while (count < limit && todos.length) {
+        while (count < realLimit && todos.length) {
             ++count;
             todos.shift()();
         }

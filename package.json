@@ -1,6 +1,6 @@
 {
   "name": "nahan-valve",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Limit amount of concurrent processes.",
   "main": "index.js",
   "repository": "nahanjs/nahan-valve"
