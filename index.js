@@ -15,7 +15,12 @@ function Valve({
     if (controlEmitter) {
         controlEmitter.on('close', (limit = 1) => {
             realLimit = limit;
-            done = false;
+
+            if (count <= realLimit) {
+                controlEmitter.emit('done');
+            } else {
+                done = false;
+            }
         });
 
         controlEmitter.on('open', (limit) => {
