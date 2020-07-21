@@ -2,10 +2,11 @@
 
 module.exports = Valve;
 
-function Valve(
+function Valve({
     defaultLimit = Infinity,
-    controlEmitter = undefined
-) {
+    controlEmitter = undefined,
+    discardExcess = false,
+} = {}) {
     let realLimit = defaultLimit;
     let done = true;
     let count = 0;
@@ -21,6 +22,10 @@ function Valve(
             realLimit = limit || defaultLimit;
             done = true;
         });
+
+        controlEmitter.on('discard', (bool = true) => {
+            discardExcess = bool;
+        });
     }
 
     return async (ctx, next) => {
@@ -30,7 +35,11 @@ function Valve(
         }
 
         if (count >= realLimit) {
-            await new Promise(resolve => todos.push(resolve));
+            if (discardExcess) {
+                return;
+            } else {
+                await new Promise(resolve => todos.push(resolve));
+            }
         } else {
             ++count;
         }
