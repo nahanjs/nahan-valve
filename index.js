@@ -13,7 +13,7 @@ function Valve({
     const todos = [];
 
     if (controlEmitter) {
-        controlEmitter.on('close', (limit = 1) => {
+        controlEmitter.on('close', (limit = 0) => {
             realLimit = limit;
 
             if (count <= realLimit) {
